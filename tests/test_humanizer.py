@@ -25,12 +25,12 @@ def test_choice_and_randint():
 def test_human_name_respects_naming_style():
     rng = random.Random(1)
     short_style = STYLES["veteran"]  # naming_style == "short"
-    verbose_style = STYLES["junior"]  # naming_style == "verbose"
+    mixed_style = STYLES["junior"]  # naming_style == "mixed"
 
     short_ctx = HumanizerContext(short_style, seed=1)
     name = short_ctx.human_name("index")
     assert len(name) <= 3 or name in ("idx", "pos", "ii", "jj", "kk", "nn")
 
-    verbose_ctx = HumanizerContext(verbose_style, seed=1)
-    name2 = verbose_ctx.human_name("index")
-    assert len(name2) >= 3 or name2 in ("idx", "pos", "counter", "holder")
+    mixed_ctx = HumanizerContext(mixed_style, seed=1)
+    name2 = mixed_ctx.human_name("index")
+    assert len(name2) >= 1

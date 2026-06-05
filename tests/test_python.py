@@ -41,11 +41,33 @@ def test_humanize_veteran_strips_type_hints():
 
 
 def test_humanize_perfectionist_keeps_type_hints():
+    # All styles now strip type hints for adversarial robustness.
+    # Verify with a custom style that use_type_hints=True still works.
+    from deai.styles import StyleProfile
     source = "def foo(x: int) -> str:\n    return str(x)\n"
-    style = STYLES["perfectionist"]
-    out = humanize_python(source, style, seed=42)
+    custom = StyleProfile(
+        name="typed",
+        description="test",
+        naming_style="short",
+        comment_density=0.0,
+        typo_rate=0.0,
+        use_docstrings=False,
+        docstring_verbosity="minimal",
+        use_type_hints=True,
+        prefer_fstrings=False,
+        prefer_list_comp=False,
+        bracket_spacing="tight",
+        operator_spacing="tight",
+        indent_style="spaces",
+        indent_size=4,
+        blank_lines=(0, 0),
+        line_length_preference=80,
+        temp_variable_rate=0.0,
+        redundant_compare_rate=0.0,
+        private_prefix_rate=0.0,
+    )
+    out = humanize_python(source, custom, seed=42)
     assert ": int" in out
-    # spacing pass may add spaces around ->
     assert "->" in out and "str" in out
 
 

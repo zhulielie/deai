@@ -33,3 +33,6 @@ htmlcov/
 .DS_Store
 Thumbs.db
 .gstack/
+
+# Node
+node_modules/
