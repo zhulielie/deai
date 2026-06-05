@@ -438,14 +438,14 @@
             <div style="padding:14px; background:#161b22; border:1px solid #30363d; border-radius:10px;">
                 <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:10px;">
                     <label style="font-size:0.85rem; color:#8b949e; font-weight:500; min-width:60px;" data-i18n="labelSource">源路径</label>
-                    <input type="text" id="local-source" placeholder="C:/Users/you/project" style="flex:1; min-width:200px;">
+                    <input type="text" id="local-source" placeholder="C:/Users/you/project 或 C:/Users/you/project.zip" style="flex:1; min-width:200px;">
                 </div>
                 <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:10px;">
                     <label style="font-size:0.85rem; color:#8b949e; font-weight:500; min-width:60px;" data-i18n="labelTarget">目标路径</label>
-                    <input type="text" id="local-target" placeholder="留空=就地修改" style="flex:1; min-width:200px;">
+                    <input type="text" id="local-target" placeholder="留空=就地修改 / 填文件夹或ZIP路径" style="flex:1; min-width:200px;">
                 </div>
                 <div style="font-size:0.75rem; color:#8b949e;" data-i18n="pathHint">
-                    目标路径留空则直接修改源文件，否则输出到目标目录。所有操作在本地完成，数据不会离开本机。
+                    源可以是文件夹或ZIP，目标可以是文件夹或ZIP。留空则就地覆盖源文件。所有操作在本地完成。
                 </div>
             </div>
 
