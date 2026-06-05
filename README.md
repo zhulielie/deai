@@ -96,7 +96,19 @@ pip install -e ".[dev]"
 
 ---
 
-## Usage
+## Web UI
+
+```bash
+pip install ".[web]"
+python web/app.py
+# Open http://localhost:5000
+```
+
+Paste code, pick a style, hit **Humanize** — instant before/after.
+
+---
+
+## CLI Usage
 
 ### 1. Humanize a single file
 

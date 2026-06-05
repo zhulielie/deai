@@ -26,6 +26,9 @@ classifiers = [
 dependencies = []
 
 [project.optional-dependencies]
+web = ["flask"]
+
+[project.optional-dependencies]
 dev = ["pytest", "black", "mypy"]
 
 [project.scripts]
