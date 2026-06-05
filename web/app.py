@@ -138,5 +138,71 @@ def api_batch():
     )
 
 
+@app.route("/api/local", methods=["POST"])
+def api_local():
+    """Process a local directory path."""
+    data = request.get_json(force=True)
+    local_path = data.get("path", "").strip()
+    if not local_path:
+        return jsonify({"ok": False, "error": "No path provided"}), 400
+
+    path_obj = Path(local_path)
+    if not path_obj.exists():
+        return jsonify({"ok": False, "error": f"Path not found: {local_path}"}), 400
+    if not path_obj.is_dir():
+        return jsonify({"ok": False, "error": f"Not a directory: {local_path}"}), 400
+
+    style_name = data.get("style", "random")
+    seed = data.get("seed")
+    engine = data.get("engine", "ast")
+
+    if seed is not None:
+        try:
+            seed = int(seed)
+        except (ValueError, TypeError):
+            seed = None
+
+    style = _resolve_style(style_name, seed)
+
+    out_buffer = io.BytesIO()
+    results = []
+    errors = []
+
+    try:
+        with zipfile.ZipFile(out_buffer, "w", zipfile.ZIP_DEFLATED) as zout:
+            for py_file in path_obj.rglob("*.py"):
+                if "__pycache__" in str(py_file):
+                    continue
+                rel = py_file.relative_to(path_obj)
+                try:
+                    source = py_file.read_text(encoding="utf-8")
+                    if engine == "ai":
+                        result = humanize_with_ai(
+                            source,
+                            style,
+                            api_key=data.get("api_key") or None,
+                            base_url=data.get("base_url") or None,
+                            model=data.get("model") or None,
+                            provider=data.get("provider") or None,
+                        )
+                    else:
+                        result = humanize_python(source, style, seed)
+                    zout.writestr(str(rel), result.encode("utf-8"))
+                    results.append(str(rel))
+                except Exception as e:
+                    errors.append({"file": str(rel), "error": str(e)})
+                    zout.writestr(str(rel), source.encode("utf-8"))
+    except Exception as e:
+        return jsonify({"ok": False, "error": str(e)}), 500
+
+    out_buffer.seek(0)
+    return send_file(
+        out_buffer,
+        mimetype="application/zip",
+        as_attachment=True,
+        download_name="deai_output.zip",
+    )
+
+
 if __name__ == "__main__":
     app.run(debug=True, port=5000)

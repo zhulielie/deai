@@ -427,6 +427,20 @@
                     <span style="font-size:0.8rem;opacity:0.6;">All .py files will be humanized, rest preserved</span>
                 </div>
             </div>
+
+            <div style="margin-top:16px; padding:14px; background:#161b22; border:1px solid #30363d; border-radius:10px;">
+                <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+                    <label style="font-size:0.85rem; color:#8b949e; font-weight:500;">Or enter local path:</label>
+                    <input type="text" id="local-path" placeholder="C:/Users/you/project" style="flex:1; min-width:200px;">
+                    <button class="btn btn-primary" id="local-btn" onclick="processLocalPath()" style="padding:8px 18px; font-size:0.85rem;">
+                        <span id="local-btn-text">Process Path</span>
+                    </button>
+                </div>
+                <div style="font-size:0.75rem; color:#8b949e; margin-top:6px;">
+                    Server must have read access to this directory. Result is downloaded as ZIP.
+                </div>
+            </div>
+
             <div id="batch-status"></div>
         </div>
 
@@ -624,6 +638,69 @@
                 btn.style.borderColor = '#238636';
                 setTimeout(() => { btn.textContent = old; btn.style.borderColor = ''; }, 1500);
             });
+        }
+
+        async function processLocalPath() {
+            const path = document.getElementById('local-path').value.trim();
+            if (!path) {
+                alert('Please enter a local directory path');
+                return;
+            }
+
+            const btn = document.getElementById('local-btn');
+            const btnText = document.getElementById('local-btn-text');
+            const status = document.getElementById('batch-status');
+            const errorDiv = document.getElementById('error');
+
+            btn.disabled = true;
+            btnText.innerHTML = '<span class="spinner"></span>Processing...';
+            status.innerHTML = '';
+            errorDiv.style.display = 'none';
+
+            const payload = {
+                path: path,
+                style: document.getElementById('batch-style').value,
+                seed: document.getElementById('batch-seed').value ? parseInt(document.getElementById('batch-seed').value) : null,
+                engine: document.getElementById('batch-engine').value,
+            };
+
+            const engine = document.getElementById('batch-engine').value;
+            if (engine === 'ai') {
+                payload.provider = document.getElementById('batch-provider').value || '';
+                payload.api_key = document.getElementById('batch-api-key').value || '';
+                payload.base_url = document.getElementById('batch-base-url').value || '';
+                payload.model = document.getElementById('batch-model').value || '';
+            }
+
+            try {
+                const res = await fetch('/api/local', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (res.ok && res.headers.get('content-type')?.includes('zip')) {
+                    const blob = await res.blob();
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'deai_output.zip';
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    URL.revokeObjectURL(url);
+                    status.innerHTML = '<div class="success-msg">✅ Download started: deai_output.zip</div>';
+                } else {
+                    const data = await res.json();
+                    errorDiv.textContent = data.error || 'Processing failed';
+                    errorDiv.style.display = 'block';
+                }
+            } catch (err) {
+                errorDiv.textContent = 'Error: ' + err.message;
+                errorDiv.style.display = 'block';
+            } finally {
+                btn.disabled = false;
+                btnText.textContent = 'Process Path';
+            }
         }
 
         function escapeHtml(text) {
