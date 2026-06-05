@@ -1,9 +1,9 @@
 """Tests for Python language humanizer."""
+
 import pytest
 
 from deai.languages.python import humanize_python
 from deai.styles import STYLES
-
 
 SAMPLE = '''
 def process(items):

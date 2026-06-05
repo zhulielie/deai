@@ -1,4 +1,5 @@
 """Shared utilities for style-driven humanization."""
+
 from __future__ import annotations
 
 import random
@@ -26,6 +27,7 @@ class HumanizerContext:
     def human_name(self, category: str) -> str:
         """Pick a name from a category, respecting style."""
         from .languages.python import PYTHON_NAME_POOLS
+
         pool = PYTHON_NAME_POOLS.get(category, ["x", "y", "z"])
         if self.style.naming_style == "short":
             pool = [p for p in pool if len(p) <= 3] or pool

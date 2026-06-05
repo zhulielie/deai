@@ -1,4 +1,5 @@
 """Tests for git history forger."""
+
 import datetime
 from pathlib import Path
 

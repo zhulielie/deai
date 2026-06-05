@@ -1,4 +1,5 @@
 """Style profiles that simulate real human developer fingerprints."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field

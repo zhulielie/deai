@@ -1,4 +1,5 @@
 """Forge realistic git commit histories for software copyright evidence."""
+
 from __future__ import annotations
 
 import datetime
@@ -117,11 +118,13 @@ def generate_commits(
         thing = rng.choice(THINGS)
         msg = rng.choice(COMMIT_POOLS[ctype]).format(thing=thing)
 
-        commits.append({
-            "datetime": dt,
-            "message": msg,
-            "type": ctype,
-        })
+        commits.append(
+            {
+                "datetime": dt,
+                "message": msg,
+                "type": ctype,
+            }
+        )
 
         # Advance by step with jitter
         jitter = rng.randint(-1, 2)

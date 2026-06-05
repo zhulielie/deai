@@ -1,4 +1,5 @@
 """Tests for HumanizerContext utilities."""
+
 import random
 
 from deai.humanizer import HumanizerContext

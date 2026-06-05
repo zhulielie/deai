@@ -1,4 +1,5 @@
 """Tests for style profile definitions."""
+
 import random
 
 import pytest
