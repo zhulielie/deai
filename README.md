@@ -5,7 +5,7 @@
 
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Tests](https://img.shields.io/badge/tests-passing-brightgreen.svg)](https://github.com/yourname/deai/actions)
+[![Tests](https://img.shields.io/badge/tests-passing-brightgreen.svg)](https://github.com/zll/deai/actions)
 
 ---
 
@@ -89,7 +89,7 @@ pip install deai
 Or from source:
 
 ```bash
-git clone https://github.com/yourname/deai.git
+git clone https://github.com/zll/deai.git
 cd deai
 pip install -e ".[dev]"
 ```
@@ -200,4 +200,4 @@ MIT
 
 If you find this tool useful or thought-provoking, please consider giving it a ⭐ on GitHub!
 
-[![Star History Chart](https://api.star-history.com/svg?repos=yourname/deai&type=Date)](https://star-history.com/#yourname/deai&Date)
+[![Star History Chart](https://api.star-history.com/svg?repos=zll/deai&type=Date)](https://star-history.com/#zll/deai&Date)
