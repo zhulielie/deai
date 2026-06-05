@@ -430,7 +430,23 @@
 
             <div style="margin-top:16px; padding:14px; background:#161b22; border:1px solid #30363d; border-radius:10px;">
                 <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
-                    <label style="font-size:0.85rem; color:#8b949e; font-weight:500;">Or enter local path:</label>
+                    <input type="file" id="folder-picker" webkitdirectory directory multiple style="display:none" onchange="handleFolderSelect(event)">
+                    <button class="btn btn-secondary" onclick="document.getElementById('folder-picker').click()" style="padding:8px 18px; font-size:0.85rem;">
+                        📁 Choose Folder
+                    </button>
+                    <span id="folder-name" style="font-size:0.85rem; color:#8b949e;"></span>
+                    <button class="btn btn-primary" id="folder-btn" onclick="processFolder()" style="padding:8px 18px; font-size:0.85rem; margin-left:auto;">
+                        <span id="folder-btn-text">Process Folder</span>
+                    </button>
+                </div>
+                <div style="font-size:0.75rem; color:#8b949e; margin-top:6px;">
+                    Select a folder from your computer. Only .py files will be processed.
+                </div>
+            </div>
+
+            <div style="margin-top:12px; padding:14px; background:#161b22; border:1px solid #30363d; border-radius:10px;">
+                <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+                    <label style="font-size:0.85rem; color:#8b949e; font-weight:500;">Or enter server path:</label>
                     <input type="text" id="local-path" placeholder="C:/Users/you/project" style="flex:1; min-width:200px;">
                     <button class="btn btn-primary" id="local-btn" onclick="processLocalPath()" style="padding:8px 18px; font-size:0.85rem;">
                         <span id="local-btn-text">Process Path</span>
@@ -638,6 +654,73 @@
                 btn.style.borderColor = '#238636';
                 setTimeout(() => { btn.textContent = old; btn.style.borderColor = ''; }, 1500);
             });
+        }
+
+        let selectedFolderFiles = [];
+
+        function handleFolderSelect(e) {
+            const files = Array.from(e.target.files);
+            selectedFolderFiles = files.filter(f => f.name.endsWith('.py') && !f.path.includes('__pycache__'));
+            const folderName = files.length > 0 ? files[0].webkitRelativePath.split('/')[0] : '';
+            document.getElementById('folder-name').textContent =
+                folderName + ' (' + selectedFolderFiles.length + ' .py files)';
+        }
+
+        async function processFolder() {
+            if (selectedFolderFiles.length === 0) {
+                alert('Please choose a folder first');
+                return;
+            }
+
+            const btn = document.getElementById('folder-btn');
+            const btnText = document.getElementById('folder-btn-text');
+            const status = document.getElementById('batch-status');
+            const errorDiv = document.getElementById('error');
+
+            btn.disabled = true;
+            btnText.innerHTML = '<span class="spinner"></span>Processing...';
+            status.innerHTML = '';
+            errorDiv.style.display = 'none';
+
+            const form = new FormData();
+            selectedFolderFiles.forEach(f => form.append('files[]', f));
+            form.append('style', document.getElementById('batch-style').value);
+            form.append('seed', document.getElementById('batch-seed').value || '');
+            form.append('engine', document.getElementById('batch-engine').value);
+
+            const engine = document.getElementById('batch-engine').value;
+            if (engine === 'ai') {
+                form.append('provider', document.getElementById('batch-provider').value || '');
+                form.append('api_key', document.getElementById('batch-api-key').value || '');
+                form.append('base_url', document.getElementById('batch-base-url').value || '');
+                form.append('model', document.getElementById('batch-model').value || '');
+            }
+
+            try {
+                const res = await fetch('/api/batch', { method: 'POST', body: form });
+                if (res.ok && res.headers.get('content-type')?.includes('zip')) {
+                    const blob = await res.blob();
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'deai_output.zip';
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    URL.revokeObjectURL(url);
+                    status.innerHTML = '<div class="success-msg">✅ Download started: deai_output.zip</div>';
+                } else {
+                    const data = await res.json();
+                    errorDiv.textContent = data.error || 'Processing failed';
+                    errorDiv.style.display = 'block';
+                }
+            } catch (err) {
+                errorDiv.textContent = 'Error: ' + err.message;
+                errorDiv.style.display = 'block';
+            } finally {
+                btn.disabled = false;
+                btnText.textContent = 'Process Folder';
+            }
         }
 
         async function processLocalPath() {

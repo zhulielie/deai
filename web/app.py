@@ -75,11 +75,7 @@ def api_humanize():
 
 @app.route("/api/batch", methods=["POST"])
 def api_batch():
-    """Batch process a ZIP upload."""
-    uploaded = request.files.get("zip")
-    if not uploaded:
-        return jsonify({"ok": False, "error": "No ZIP file uploaded"}), 400
-
+    """Batch process a ZIP upload or multiple files from folder picker."""
     style_name = request.form.get("style", "random")
     seed = request.form.get("seed")
     engine = request.form.get("engine", "ast")
@@ -91,43 +87,44 @@ def api_batch():
             seed = None
 
     style = _resolve_style(style_name, seed)
-
-    # Read uploaded zip
-    in_buffer = io.BytesIO(uploaded.read())
     out_buffer = io.BytesIO()
 
-    results = []
-    errors = []
+    uploaded = request.files.get("zip")
+    files = request.files.getlist("files[]")
 
     try:
-        with zipfile.ZipFile(in_buffer, "r") as zin:
-            with zipfile.ZipFile(out_buffer, "w", zipfile.ZIP_DEFLATED) as zout:
-                for item in zin.namelist():
-                    data = zin.read(item)
-                    if not item.endswith(".py") or "__pycache__" in item:
-                        zout.writestr(item, data)
+        with zipfile.ZipFile(out_buffer, "w", zipfile.ZIP_DEFLATED) as zout:
+            if uploaded:
+                # ZIP upload path
+                with zipfile.ZipFile(io.BytesIO(uploaded.read()), "r") as zin:
+                    for item in zin.namelist():
+                        data = zin.read(item)
+                        if not item.endswith(".py") or "__pycache__" in item:
+                            zout.writestr(item, data)
+                            continue
+                        try:
+                            source = data.decode("utf-8")
+                            result = _humanize_source(source, style, engine, seed, request.form)
+                            zout.writestr(item, result.encode("utf-8"))
+                        except Exception as e:
+                            zout.writestr(item, data)
+            elif files:
+                # Folder picker path
+                for f in files:
+                    if not f.filename.endswith(".py") or "__pycache__" in f.filename:
+                        zout.writestr(f.filename, f.read())
                         continue
-
                     try:
-                        source = data.decode("utf-8")
-                        if engine == "ai":
-                            result = humanize_with_ai(
-                                source,
-                                style,
-                                api_key=request.form.get("api_key") or None,
-                                base_url=request.form.get("base_url") or None,
-                                model=request.form.get("model") or None,
-                                provider=request.form.get("provider") or None,
-                            )
-                        else:
-                            result = humanize_python(source, style, seed)
-                        zout.writestr(item, result.encode("utf-8"))
-                        results.append(item)
+                        source = f.read().decode("utf-8")
+                        result = _humanize_source(source, style, engine, seed, request.form)
+                        zout.writestr(f.filename, result.encode("utf-8"))
                     except Exception as e:
-                        errors.append({"file": item, "error": str(e)})
-                        zout.writestr(item, data)
-    except zipfile.BadZipFile:
-        return jsonify({"ok": False, "error": "Invalid ZIP file"}), 400
+                        f.seek(0)
+                        zout.writestr(f.filename, f.read())
+            else:
+                return jsonify({"ok": False, "error": "No ZIP file or folder files uploaded"}), 400
+    except Exception as e:
+        return jsonify({"ok": False, "error": str(e)}), 500
 
     out_buffer.seek(0)
     return send_file(
@@ -136,6 +133,19 @@ def api_batch():
         as_attachment=True,
         download_name="deai_output.zip",
     )
+
+
+def _humanize_source(source: str, style, engine: str, seed, form):
+    if engine == "ai":
+        return humanize_with_ai(
+            source,
+            style,
+            api_key=form.get("api_key") or None,
+            base_url=form.get("base_url") or None,
+            model=form.get("model") or None,
+            provider=form.get("provider") or None,
+        )
+    return humanize_python(source, style, seed)
 
 
 @app.route("/api/local", methods=["POST"])
