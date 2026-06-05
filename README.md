@@ -6,6 +6,8 @@
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Tests](https://img.shields.io/badge/tests-passing-brightgreen.svg)](https://github.com/zll/deai/actions)
+[![VS Code](https://img.shields.io/badge/VS%20Code-Extension-blueviolet.svg)](./vscode-extension)
+[![Web UI](https://img.shields.io/badge/Web-UI-orange.svg)](./web)
 
 ---
 
@@ -94,6 +96,13 @@ cd deai
 pip install -e ".[dev]"
 ```
 
+Or with Docker:
+
+```bash
+docker-compose up
+# Open http://localhost:5000
+```
+
 ---
 
 ## Web UI
@@ -104,7 +113,34 @@ python web/app.py
 # Open http://localhost:5000
 ```
 
-Paste code, pick a style, hit **Humanize** — instant before/after.
+- **Single File** — paste code, pick engine/style, hit **Humanize**
+- **Project ZIP** — upload a ZIP, batch-process all `.py` files, download result
+- **Dual Engine** — AST Rules (local, free) or AI Rewrite (LLM-powered)
+- **7 AI Providers** — OpenAI, DeepSeek, Anthropic, Groq, Together AI, Ollama (local), Custom
+
+---
+
+## VS Code Extension
+
+Install from the `.vsix` or build locally:
+
+```bash
+cd vscode-extension
+npm install
+npm run compile
+```
+
+Then press `F5` in VS Code to launch the Extension Development Host.
+
+**Commands:**
+- `deai: Humanize Selection` — right-click selected code
+- `deai: Humanize Entire File` — transform the whole file
+- `deai: Open Web UI` — open the web interface
+
+**Settings** (search "deai" in VS Code settings):
+- Engine: `ast` or `ai`
+- Style: `random`, `veteran`, `junior`, `hacker`, `perfectionist`, `copypaster`
+- Provider & API key for AI mode
 
 ---
 
@@ -164,9 +200,13 @@ This generates `forge_commits.sh`. Run it in your repo to create a realistic bac
 - [x] Python AST humanizer
 - [x] Style persona system
 - [x] Git commit history forger
+- [x] Web UI — single file + ZIP batch
+- [x] Dual engine — AST + AI rewrite
+- [x] 7 AI providers (OpenAI, DeepSeek, Anthropic, Groq, Together, Ollama, Custom)
+- [x] VS Code extension
 - [ ] JavaScript / TypeScript support
 - [ ] Java / Go / Rust support
-- [ ] File-structure reorganization (shuffle modules to look less engineered)
+- [ ] File-structure reorganization
 - [ ] README / doc humanizer
 - [ ] GitHub Action to humanize on push
 
