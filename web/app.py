@@ -150,17 +150,19 @@ def _humanize_source(source: str, style, engine: str, seed, form):
 
 @app.route("/api/local", methods=["POST"])
 def api_local():
-    """Process a local directory path."""
+    """Process a local directory — write results back to disk (in-place or to target dir)."""
     data = request.get_json(force=True)
-    local_path = data.get("path", "").strip()
-    if not local_path:
-        return jsonify({"ok": False, "error": "No path provided"}), 400
+    source_path = data.get("source", "").strip()
+    target_path = data.get("target", "").strip()
 
-    path_obj = Path(local_path)
-    if not path_obj.exists():
-        return jsonify({"ok": False, "error": f"Path not found: {local_path}"}), 400
-    if not path_obj.is_dir():
-        return jsonify({"ok": False, "error": f"Not a directory: {local_path}"}), 400
+    if not source_path:
+        return jsonify({"ok": False, "error": "No source path provided"}), 400
+
+    source_obj = Path(source_path)
+    if not source_obj.exists():
+        return jsonify({"ok": False, "error": f"Source not found: {source_path}"}), 400
+    if not source_obj.is_dir():
+        return jsonify({"ok": False, "error": f"Not a directory: {source_path}"}), 400
 
     style_name = data.get("style", "random")
     seed = data.get("seed")
@@ -174,44 +176,56 @@ def api_local():
 
     style = _resolve_style(style_name, seed)
 
-    out_buffer = io.BytesIO()
-    results = []
+    # Determine target
+    in_place = not target_path
+    target_obj = source_obj if in_place else Path(target_path)
+    if not in_place:
+        target_obj.mkdir(parents=True, exist_ok=True)
+
+    processed = 0
+    skipped = 0
     errors = []
 
-    try:
-        with zipfile.ZipFile(out_buffer, "w", zipfile.ZIP_DEFLATED) as zout:
-            for py_file in path_obj.rglob("*.py"):
-                if "__pycache__" in str(py_file):
-                    continue
-                rel = py_file.relative_to(path_obj)
-                try:
-                    source = py_file.read_text(encoding="utf-8")
-                    if engine == "ai":
-                        result = humanize_with_ai(
-                            source,
-                            style,
-                            api_key=data.get("api_key") or None,
-                            base_url=data.get("base_url") or None,
-                            model=data.get("model") or None,
-                            provider=data.get("provider") or None,
-                        )
-                    else:
-                        result = humanize_python(source, style, seed)
-                    zout.writestr(str(rel), result.encode("utf-8"))
-                    results.append(str(rel))
-                except Exception as e:
-                    errors.append({"file": str(rel), "error": str(e)})
-                    zout.writestr(str(rel), source.encode("utf-8"))
-    except Exception as e:
-        return jsonify({"ok": False, "error": str(e)}), 500
+    for py_file in source_obj.rglob("*.py"):
+        if "__pycache__" in str(py_file):
+            skipped += 1
+            continue
+        rel = py_file.relative_to(source_obj)
+        out_file = target_obj / rel
+        if not in_place:
+            out_file.parent.mkdir(parents=True, exist_ok=True)
 
-    out_buffer.seek(0)
-    return send_file(
-        out_buffer,
-        mimetype="application/zip",
-        as_attachment=True,
-        download_name="deai_output.zip",
-    )
+        try:
+            source = py_file.read_text(encoding="utf-8")
+            if engine == "ai":
+                result = humanize_with_ai(
+                    source,
+                    style,
+                    api_key=data.get("api_key") or None,
+                    base_url=data.get("base_url") or None,
+                    model=data.get("model") or None,
+                    provider=data.get("provider") or None,
+                )
+            else:
+                result = humanize_python(source, style, seed)
+            out_file.write_text(result, encoding="utf-8")
+            processed += 1
+        except Exception as e:
+            errors.append({"file": str(rel), "error": str(e)})
+            if not in_place:
+                try:
+                    out_file.write_text(py_file.read_text(encoding="utf-8"), encoding="utf-8")
+                except Exception:
+                    pass
+
+    return jsonify({
+        "ok": True,
+        "processed": processed,
+        "skipped": skipped,
+        "errors": errors,
+        "target": str(target_obj),
+        "in_place": in_place,
+    })
 
 
 if __name__ == "__main__":

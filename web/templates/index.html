@@ -403,8 +403,8 @@
                     <label data-i18n="labelSeed">种子</label>
                     <input type="number" id="batch-seed" placeholder="随机">
                 </div>
-                <button class="btn btn-primary" id="batch-btn" onclick="processZip()">
-                    <span id="batch-btn-text" data-i18n="btnProcessZip">处理并下载</span>
+                <button class="btn btn-primary" id="batch-btn" onclick="processLocalPath()">
+                    <span id="batch-btn-text" data-i18n="btnProcess">开始处理</span>
                 </button>
             </div>
 
@@ -435,40 +435,17 @@
                 </div>
             </div>
 
-            <div class="dropzone" id="dropzone" onclick="document.getElementById('zip-file').click()">
-                <input type="file" id="zip-file" accept=".zip" style="display:none" onchange="handleFileSelect(event)">
-                <div class="dropzone-text">
-                    <strong data-i18n="dropzoneClick">点击选择ZIP</strong><span data-i18n="dropzoneOr">或拖拽ZIP到此处</span><br>
-                    <span style="font-size:0.8rem;opacity:0.6;" data-i18n="dropzoneHint">所有.py文件将被处理，其余保留</span>
+            <div style="padding:14px; background:#161b22; border:1px solid #30363d; border-radius:10px;">
+                <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:10px;">
+                    <label style="font-size:0.85rem; color:#8b949e; font-weight:500; min-width:60px;" data-i18n="labelSource">源路径</label>
+                    <input type="text" id="local-source" placeholder="C:/Users/you/project" style="flex:1; min-width:200px;">
                 </div>
-            </div>
-
-            <div style="margin-top:16px; padding:14px; background:#161b22; border:1px solid #30363d; border-radius:10px;">
-                <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
-                    <input type="file" id="folder-picker" webkitdirectory directory multiple style="display:none" onchange="handleFolderSelect(event)">
-                    <button class="btn btn-secondary" onclick="document.getElementById('folder-picker').click()" style="padding:8px 18px; font-size:0.85rem;">
-                        📁 <span data-i18n="btnChooseFolder">选择文件夹</span>
-                    </button>
-                    <span id="folder-name" style="font-size:0.85rem; color:#8b949e;"></span>
-                    <button class="btn btn-primary" id="folder-btn" onclick="processFolder()" style="padding:8px 18px; font-size:0.85rem; margin-left:auto;">
-                        <span id="folder-btn-text" data-i18n="btnProcessFolder">处理文件夹</span>
-                    </button>
+                <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:10px;">
+                    <label style="font-size:0.85rem; color:#8b949e; font-weight:500; min-width:60px;" data-i18n="labelTarget">目标路径</label>
+                    <input type="text" id="local-target" placeholder="留空=就地修改" style="flex:1; min-width:200px;">
                 </div>
-                <div style="font-size:0.75rem; color:#8b949e; margin-top:6px;" data-i18n="folderHint">
-                    从本地电脑选择文件夹，仅处理其中的 .py 文件，数据不会离开本机。
-                </div>
-            </div>
-
-            <div style="margin-top:12px; padding:14px; background:#161b22; border:1px solid #30363d; border-radius:10px;">
-                <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
-                    <label style="font-size:0.85rem; color:#8b949e; font-weight:500;" data-i18n="labelLocalPath">或输入本地路径：</label>
-                    <input type="text" id="local-path" placeholder="C:/Users/you/project" style="flex:1; min-width:200px;">
-                    <button class="btn btn-primary" id="local-btn" onclick="processLocalPath()" style="padding:8px 18px; font-size:0.85rem;">
-                        <span id="local-btn-text" data-i18n="btnProcessPath">处理路径</span>
-                    </button>
-                </div>
-                <div style="font-size:0.75rem; color:#8b949e; margin-top:6px;" data-i18n="pathHint">
-                    服务器需有该目录的读取权限，处理结果打包为 ZIP 下载。
+                <div style="font-size:0.75rem; color:#8b949e;" data-i18n="pathHint">
+                    目标路径留空则直接修改源文件，否则输出到目标目录。所有操作在本地完成，数据不会离开本机。
                 </div>
             </div>
 
@@ -497,7 +474,11 @@
                 badgeBefore: '处理前',
                 badgeAfter: '处理后',
                 btnCopy: '复制',
-                btnProcessZip: '处理并下载',
+                btnProcess: '开始处理',
+                labelSource: '源路径',
+                labelTarget: '目标路径',
+                modifiedInPlace: '已就地修改',
+                outputTo: '已输出到',
                 dropzoneClick: '点击选择ZIP',
                 dropzoneOr: '或拖拽ZIP到此处',
                 dropzoneHint: '所有.py文件将被处理，其余保留',
@@ -538,7 +519,11 @@
                 badgeBefore: 'BEFORE',
                 badgeAfter: 'AFTER',
                 btnCopy: 'Copy',
-                btnProcessZip: 'Process & Download',
+                btnProcess: 'Process',
+                labelSource: 'Source',
+                labelTarget: 'Target',
+                modifiedInPlace: 'Modified in place',
+                outputTo: 'Output to',
                 dropzoneClick: 'Click to select ZIP',
                 dropzoneOr: ' or drag a ZIP here',
                 dropzoneHint: 'All .py files will be processed, rest preserved',
@@ -850,14 +835,15 @@
         }
 
         async function processLocalPath() {
-            const path = document.getElementById('local-path').value.trim();
-            if (!path) {
-                alert(t('pleaseEnterPath'));
+            const source = document.getElementById('local-source').value.trim();
+            const target = document.getElementById('local-target').value.trim();
+            if (!source) {
+                alert(currentLang === 'zh' ? '请输入源路径' : 'Please enter source path');
                 return;
             }
 
-            const btn = document.getElementById('local-btn');
-            const btnText = document.getElementById('local-btn-text');
+            const btn = document.getElementById('batch-btn');
+            const btnText = document.getElementById('batch-btn-text');
             const status = document.getElementById('batch-status');
             const errorDiv = document.getElementById('error');
 
@@ -867,7 +853,8 @@
             errorDiv.style.display = 'none';
 
             const payload = {
-                path: path,
+                source: source,
+                target: target,
                 style: document.getElementById('batch-style').value,
                 seed: document.getElementById('batch-seed').value ? parseInt(document.getElementById('batch-seed').value) : null,
                 engine: document.getElementById('batch-engine').value,
@@ -887,19 +874,19 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
-                if (res.ok && res.headers.get('content-type')?.includes('zip')) {
-                    const blob = await res.blob();
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = 'deai_output.zip';
-                    document.body.appendChild(a);
-                    a.click();
-                    a.remove();
-                    URL.revokeObjectURL(url);
-                    status.innerHTML = '<div class="success-msg">' + t('downloadStarted') + '</div>';
+                const data = await res.json();
+                if (data.ok) {
+                    const modeText = data.in_place
+                        ? (currentLang === 'zh' ? '已就地修改' : 'Modified in place')
+                        : (currentLang === 'zh' ? '已输出到' : 'Output to') + ' ' + data.target;
+                    const html = '<div class="success-msg">' + modeText + '<br>' +
+                        (currentLang === 'zh'
+                            ? '处理了 ' + data.processed + ' 个文件，跳过 ' + data.skipped + ' 个'
+                            : 'Processed ' + data.processed + ' files, skipped ' + data.skipped) +
+                        (data.errors.length ? '<br><span style="color:#f85149">' + data.errors.length + ' errors</span>' : '') +
+                        '</div>';
+                    status.innerHTML = html;
                 } else {
-                    const data = await res.json();
                     errorDiv.textContent = data.error || t('processingFailed');
                     errorDiv.style.display = 'block';
                 }
@@ -908,7 +895,7 @@
                 errorDiv.style.display = 'block';
             } finally {
                 btn.disabled = false;
-                btnText.textContent = t('btnProcessPath');
+                btnText.textContent = t('btnProcess');
             }
         }
 
