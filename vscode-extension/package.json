@@ -1,0 +1,112 @@
+{
+  "name": "deai-vscode",
+  "displayName": "deai — Make AI Code Look Human",
+  "description": "Style anonymizer for AI-generated code. Transform your code to look hand-written directly in VS Code.",
+  "version": "0.1.0",
+  "publisher": "zll",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Other",
+    "Machine Learning",
+    "Formatters"
+  ],
+  "keywords": [
+    "ai",
+    "code",
+    "humanize",
+    "style",
+    "anonymizer"
+  ],
+  "activationEvents": [
+    "onCommand:deai.humanizeSelection",
+    "onCommand:deai.humanizeFile"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "deai.humanizeSelection",
+        "title": "Humanize Selection",
+        "category": "deai",
+        "icon": "$(sparkle)"
+      },
+      {
+        "command": "deai.humanizeFile",
+        "title": "Humanize Entire File",
+        "category": "deai",
+        "icon": "$(file-code)"
+      },
+      {
+        "command": "deai.openWebUI",
+        "title": "Open Web UI",
+        "category": "deai",
+        "icon": "$(globe)"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "deai.humanizeSelection",
+          "when": "editorHasSelection && editorLangId == python",
+          "group": "9_cutcopypaste@5"
+        }
+      ],
+      "editor/title/context": [
+        {
+          "command": "deai.humanizeFile",
+          "when": "editorLangId == python",
+          "group": "1_modification@5"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "deai",
+      "properties": {
+        "deai.engine": {
+          "type": "string",
+          "default": "ast",
+          "enum": ["ast", "ai"],
+          "description": "Humanization engine: AST (local, free) or AI (LLM-powered)"
+        },
+        "deai.style": {
+          "type": "string",
+          "default": "random",
+          "enum": ["random", "veteran", "junior", "hacker", "perfectionist", "copypaster"],
+          "description": "Developer persona style"
+        },
+        "deai.provider": {
+          "type": "string",
+          "default": "openai",
+          "enum": ["openai", "deepseek", "anthropic", "groq", "together", "ollama", "custom"],
+          "description": "AI provider (only used when engine is 'ai')"
+        },
+        "deai.apiKey": {
+          "type": "string",
+          "default": "",
+          "description": "API key for the selected provider"
+        },
+        "deai.baseUrl": {
+          "type": "string",
+          "default": "",
+          "description": "Custom base URL for the API (optional)"
+        },
+        "deai.model": {
+          "type": "string",
+          "default": "",
+          "description": "Model name (optional, uses provider default if empty)"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.80.0",
+    "typescript": "^5.0.0"
+  }
+}
