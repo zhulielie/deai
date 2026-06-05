@@ -351,7 +351,10 @@
                 <div class="panel">
                     <div class="panel-header">
                         <span class="panel-title">Output (Humanized)</span>
-                        <span class="panel-badge badge-output">AFTER</span>
+                        <div style="display:flex;gap:8px;align-items:center;">
+                            <button class="btn btn-secondary" id="copy-btn" onclick="copyOutput()" style="padding:4px 12px;font-size:0.75rem;">Copy</button>
+                            <span class="panel-badge badge-output">AFTER</span>
+                        </div>
                     </div>
                     <div class="panel-body">
                         <div class="code-output" id="output">
@@ -608,6 +611,19 @@
                 btn.disabled = false;
                 btnText.textContent = 'Process & Download';
             }
+        }
+
+        function copyOutput() {
+            const codeEl = document.querySelector('#output code');
+            if (!codeEl) return;
+            const text = codeEl.textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                const btn = document.getElementById('copy-btn');
+                const old = btn.textContent;
+                btn.textContent = 'Copied!';
+                btn.style.borderColor = '#238636';
+                setTimeout(() => { btn.textContent = old; btn.style.borderColor = ''; }, 1500);
+            });
         }
 
         function escapeHtml(text) {
