@@ -60,16 +60,23 @@ def humanize_with_ai(
     api_key: Optional[str] = None,
     base_url: Optional[str] = None,
     model: Optional[str] = None,
+    provider: Optional[str] = None,
 ) -> str:
     """Humanize code using an LLM API."""
+    provider = (provider or "").lower()
+
+    # Ollama runs locally and does not need a real API key
+    is_ollama = provider == "ollama" or (base_url and "ollama" in base_url)
+
     api_key = api_key or os.environ.get("OPENAI_API_KEY") or os.environ.get("DEEPSEEK_API_KEY")
-    if not api_key:
+    if not api_key and not is_ollama:
         raise ValueError("No API key provided. Set OPENAI_API_KEY or DEEPSEEK_API_KEY, or pass api_key.")
 
     base_url = base_url or os.environ.get("OPENAI_BASE_URL")
     model = model or os.environ.get("OPENAI_MODEL", "gpt-4o-mini")
 
-    client = OpenAI(api_key=api_key, base_url=base_url)
+    # Ollama may need a dummy key for the OpenAI client
+    client = OpenAI(api_key=api_key or "ollama", base_url=base_url)
 
     response = client.chat.completions.create(
         model=model,

@@ -286,16 +286,28 @@
 
             <div class="ai-config" id="ai-config">
                 <div class="control-group">
+                    <label>Provider</label>
+                    <select id="provider" onchange="applyProviderPreset()">
+                        <option value="openai">OpenAI</option>
+                        <option value="deepseek">DeepSeek</option>
+                        <option value="anthropic">Anthropic</option>
+                        <option value="groq">Groq</option>
+                        <option value="together">Together AI</option>
+                        <option value="ollama">🖥️ Ollama (local)</option>
+                        <option value="custom">⚙️ Custom</option>
+                    </select>
+                </div>
+                <div class="control-group">
                     <label>API Key</label>
                     <input type="password" id="api-key" placeholder="sk-...">
                 </div>
                 <div class="control-group">
                     <label>Base URL</label>
-                    <input type="text" id="base-url" placeholder="https://api.deepseek.com/v1">
+                    <input type="text" id="base-url" placeholder="https://api.openai.com/v1">
                 </div>
                 <div class="control-group">
                     <label>Model</label>
-                    <input type="text" id="model" placeholder="deepseek-chat">
+                    <input type="text" id="model" placeholder="gpt-4o-mini">
                 </div>
             </div>
 
@@ -380,16 +392,28 @@
 
             <div class="ai-config" id="batch-ai-config">
                 <div class="control-group">
+                    <label>Provider</label>
+                    <select id="batch-provider" onchange="applyBatchProviderPreset()">
+                        <option value="openai">OpenAI</option>
+                        <option value="deepseek">DeepSeek</option>
+                        <option value="anthropic">Anthropic</option>
+                        <option value="groq">Groq</option>
+                        <option value="together">Together AI</option>
+                        <option value="ollama">🖥️ Ollama (local)</option>
+                        <option value="custom">⚙️ Custom</option>
+                    </select>
+                </div>
+                <div class="control-group">
                     <label>API Key</label>
                     <input type="password" id="batch-api-key" placeholder="sk-...">
                 </div>
                 <div class="control-group">
                     <label>Base URL</label>
-                    <input type="text" id="batch-base-url" placeholder="https://api.deepseek.com/v1">
+                    <input type="text" id="batch-base-url" placeholder="https://api.openai.com/v1">
                 </div>
                 <div class="control-group">
                     <label>Model</label>
-                    <input type="text" id="batch-model" placeholder="deepseek-chat">
+                    <input type="text" id="batch-model" placeholder="gpt-4o-mini">
                 </div>
             </div>
 
@@ -428,6 +452,36 @@
             document.getElementById('batch-ai-config').classList.toggle('visible', engine === 'ai');
         }
 
+        const PROVIDER_PRESETS = {
+            openai:   { base_url: '',                                 model: 'gpt-4o-mini',                           key_label: 'sk-...' },
+            deepseek: { base_url: 'https://api.deepseek.com/v1',       model: 'deepseek-chat',                         key_label: 'sk-...' },
+            anthropic:{ base_url: 'https://api.anthropic.com/v1',      model: 'claude-3-5-sonnet-20241022',            key_label: 'sk-ant-...' },
+            groq:     { base_url: 'https://api.groq.com/openai/v1',    model: 'llama-3.2-90b-vision-preview',          key_label: 'gsk_...' },
+            together: { base_url: 'https://api.together.xyz/v1',       model: 'meta-llama/Llama-3.2-70B-Instruct-Turbo', key_label: 'sk-...' },
+            ollama:   { base_url: 'http://localhost:11434/v1',         model: 'llama3.2',                              key_label: 'optional' },
+            custom:   { base_url: '',                                 model: '',                                      key_label: 'sk-...' },
+        };
+
+        function applyProviderPreset() {
+            const p = document.getElementById('provider').value;
+            const preset = PROVIDER_PRESETS[p] || PROVIDER_PRESETS.custom;
+            document.getElementById('base-url').value = preset.base_url;
+            document.getElementById('model').value = preset.model;
+            const keyInput = document.getElementById('api-key');
+            keyInput.placeholder = preset.key_label;
+            keyInput.disabled = p === 'ollama';
+        }
+
+        function applyBatchProviderPreset() {
+            const p = document.getElementById('batch-provider').value;
+            const preset = PROVIDER_PRESETS[p] || PROVIDER_PRESETS.custom;
+            document.getElementById('batch-base-url').value = preset.base_url;
+            document.getElementById('batch-model').value = preset.model;
+            const keyInput = document.getElementById('batch-api-key');
+            keyInput.placeholder = preset.key_label;
+            keyInput.disabled = p === 'ollama';
+        }
+
         async function humanize() {
             const btn = document.getElementById('run-btn');
             const btnText = document.getElementById('btn-text');
@@ -447,6 +501,7 @@
                 source, style, seed: seed ? parseInt(seed) : null, engine
             };
             if (engine === 'ai') {
+                payload.provider = document.getElementById('provider').value || undefined;
                 payload.api_key = document.getElementById('api-key').value || undefined;
                 payload.base_url = document.getElementById('base-url').value || undefined;
                 payload.model = document.getElementById('model').value || undefined;
@@ -522,6 +577,7 @@
 
             const engine = document.getElementById('batch-engine').value;
             if (engine === 'ai') {
+                form.append('provider', document.getElementById('batch-provider').value || '');
                 form.append('api_key', document.getElementById('batch-api-key').value || '');
                 form.append('base_url', document.getElementById('batch-base-url').value || '');
                 form.append('model', document.getElementById('batch-model').value || '');

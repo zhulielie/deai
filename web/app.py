@@ -62,6 +62,7 @@ def api_humanize():
                 api_key=data.get("api_key"),
                 base_url=data.get("base_url"),
                 model=data.get("model"),
+                provider=data.get("provider"),
             )
         else:
             result = humanize_python(source, style, seed)
@@ -116,6 +117,7 @@ def api_batch():
                                 api_key=request.form.get("api_key") or None,
                                 base_url=request.form.get("base_url") or None,
                                 model=request.form.get("model") or None,
+                                provider=request.form.get("provider") or None,
                             )
                         else:
                             result = humanize_python(source, style, seed)
