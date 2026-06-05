@@ -1,16 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>deai — Make AI Code Look Human</title>
+    <title>deai — 让AI代码看起来像人写的</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'PingFang SC', 'Microsoft YaHei', sans-serif;
             background: #0d1117;
             color: #c9d1d9;
             min-height: 100vh;
@@ -18,6 +18,7 @@
         .header {
             text-align: center;
             padding: 30px 20px 15px;
+            position: relative;
         }
         .header h1 {
             font-size: 2.2rem;
@@ -28,6 +29,19 @@
             margin-bottom: 6px;
         }
         .header p { color: #8b949e; font-size: 1rem; }
+        .lang-switch {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 4px 12px;
+            font-size: 0.8rem;
+            color: #8b949e;
+            cursor: pointer;
+        }
+        .lang-switch:hover { border-color: #58a6ff; }
 
         .container {
             max-width: 1400px;
@@ -244,41 +258,42 @@
 </head>
 <body>
     <div class="header">
+        <button class="lang-switch" onclick="toggleLang()">EN / 中文</button>
         <h1>deai</h1>
-        <p>Dual-engine code style transfer — AST rules + AI rewrite</p>
+        <p data-i18n="subtitle">双引擎代码风格迁移 — AST规则 + AI重写</p>
     </div>
 
     <div class="container">
         <div class="tabs">
-            <div class="tab active" onclick="setMode('single')" id="tab-single">Single File</div>
-            <div class="tab" onclick="setMode('batch')" id="tab-batch">Project ZIP</div>
+            <div class="tab active" onclick="setMode('single')" id="tab-single" data-i18n="tabSingle">单文件</div>
+            <div class="tab" onclick="setMode('batch')" id="tab-batch" data-i18n="tabBatch">项目处理</div>
         </div>
 
         <!-- SINGLE FILE MODE -->
         <div id="mode-single">
             <div class="controls">
                 <div class="control-group">
-                    <label>Engine</label>
+                    <label data-i18n="labelEngine">引擎</label>
                     <select id="engine" onchange="toggleAiConfig()">
-                        <option value="ast">🤖 AST Rules</option>
-                        <option value="ai">🧠 AI Rewrite</option>
+                        <option value="ast">🤖 AST规则</option>
+                        <option value="ai">🧠 AI重写</option>
                     </select>
                 </div>
                 <div class="control-group">
-                    <label>Style</label>
+                    <label data-i18n="labelStyle">风格</label>
                     <select id="style">
-                        <option value="random">🎲 Random</option>
+                        <option value="random">🎲 随机</option>
                         {% for s in styles %}
                         <option value="{{ s }}">{{ s.title() }}</option>
                         {% endfor %}
                     </select>
                 </div>
                 <div class="control-group">
-                    <label>Seed</label>
-                    <input type="number" id="seed" placeholder="random">
+                    <label data-i18n="labelSeed">种子</label>
+                    <input type="number" id="seed" placeholder="随机">
                 </div>
                 <button class="btn btn-primary" id="run-btn" onclick="humanize()">
-                    <span id="btn-text">Humanize</span>
+                    <span id="btn-text" data-i18n="btnHumanize">风格化</span>
                 </button>
                 <span class="engine-badge badge-ast" id="engine-badge">AST</span>
                 <span class="style-tag" id="style-used"></span>
@@ -286,27 +301,27 @@
 
             <div class="ai-config" id="ai-config">
                 <div class="control-group">
-                    <label>Provider</label>
+                    <label data-i18n="labelProvider">提供商</label>
                     <select id="provider" onchange="applyProviderPreset()">
                         <option value="openai">OpenAI</option>
                         <option value="deepseek">DeepSeek</option>
                         <option value="anthropic">Anthropic</option>
                         <option value="groq">Groq</option>
                         <option value="together">Together AI</option>
-                        <option value="ollama">🖥️ Ollama (local)</option>
-                        <option value="custom">⚙️ Custom</option>
+                        <option value="ollama">🖥️ Ollama (本地)</option>
+                        <option value="custom">⚙️ 自定义</option>
                     </select>
                 </div>
                 <div class="control-group">
-                    <label>API Key</label>
+                    <label data-i18n="labelApiKey">API密钥</label>
                     <input type="password" id="api-key" placeholder="sk-...">
                 </div>
                 <div class="control-group">
-                    <label>Base URL</label>
+                    <label data-i18n="labelBaseUrl">Base URL</label>
                     <input type="text" id="base-url" placeholder="https://api.openai.com/v1">
                 </div>
                 <div class="control-group">
-                    <label>Model</label>
+                    <label data-i18n="labelModel">模型</label>
                     <input type="text" id="model" placeholder="gpt-4o-mini">
                 </div>
             </div>
@@ -314,8 +329,8 @@
             <div class="editor-row">
                 <div class="panel">
                     <div class="panel-header">
-                        <span class="panel-title">Input (AI Code)</span>
-                        <span class="panel-badge badge-input">BEFORE</span>
+                        <span class="panel-title" data-i18n="panelInput">输入（AI代码）</span>
+                        <span class="panel-badge badge-input" data-i18n="badgeBefore">处理前</span>
                     </div>
                     <div class="panel-body">
                         <textarea class="code-input" id="source" spellcheck="false">def process_user_data(user_list: List[Dict], output_directory: str, verbose: bool = True) -> Optional[str]:
@@ -350,72 +365,72 @@
                 </div>
                 <div class="panel">
                     <div class="panel-header">
-                        <span class="panel-title">Output (Humanized)</span>
+                        <span class="panel-title" data-i18n="panelOutput">输出（风格化）</span>
                         <div style="display:flex;gap:8px;align-items:center;">
-                            <button class="btn btn-secondary" id="copy-btn" onclick="copyOutput()" style="padding:4px 12px;font-size:0.75rem;">Copy</button>
-                            <span class="panel-badge badge-output">AFTER</span>
+                            <button class="btn btn-secondary" id="copy-btn" onclick="copyOutput()" style="padding:4px 12px;font-size:0.75rem;" data-i18n="btnCopy">复制</button>
+                            <span class="panel-badge badge-output" data-i18n="badgeAfter">处理后</span>
                         </div>
                     </div>
                     <div class="panel-body">
                         <div class="code-output" id="output">
-                            <pre><code class="language-python"># Click "Humanize" to see the result</code></pre>
+                            <pre><code class="language-python"># 点击"风格化"查看结果</code></pre>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- BATCH / ZIP MODE -->
+        <!-- BATCH MODE -->
         <div id="mode-batch" class="hidden">
             <div class="controls">
                 <div class="control-group">
-                    <label>Engine</label>
+                    <label data-i18n="labelEngine">引擎</label>
                     <select id="batch-engine" onchange="toggleBatchAiConfig()">
-                        <option value="ast">🤖 AST Rules</option>
-                        <option value="ai">🧠 AI Rewrite</option>
+                        <option value="ast">🤖 AST规则</option>
+                        <option value="ai">🧠 AI重写</option>
                     </select>
                 </div>
                 <div class="control-group">
-                    <label>Style</label>
+                    <label data-i18n="labelStyle">风格</label>
                     <select id="batch-style">
-                        <option value="random">🎲 Random</option>
+                        <option value="random">🎲 随机</option>
                         {% for s in styles %}
                         <option value="{{ s }}">{{ s.title() }}</option>
                         {% endfor %}
                     </select>
                 </div>
                 <div class="control-group">
-                    <label>Seed</label>
-                    <input type="number" id="batch-seed" placeholder="random">
+                    <label data-i18n="labelSeed">种子</label>
+                    <input type="number" id="batch-seed" placeholder="随机">
                 </div>
                 <button class="btn btn-primary" id="batch-btn" onclick="processZip()">
-                    <span id="batch-btn-text">Process & Download</span>
+                    <span id="batch-btn-text" data-i18n="btnProcessZip">处理并下载</span>
                 </button>
             </div>
 
             <div class="ai-config" id="batch-ai-config">
                 <div class="control-group">
-                    <label>Provider</label>
+                    <label data-i18n="labelProvider">提供商</label>
                     <select id="batch-provider" onchange="applyBatchProviderPreset()">
                         <option value="openai">OpenAI</option>
                         <option value="deepseek">DeepSeek</option>
                         <option value="anthropic">Anthropic</option>
                         <option value="groq">Groq</option>
                         <option value="together">Together AI</option>
-                        <option value="ollama">🖥️ Ollama (local)</option>
-                        <option value="custom">⚙️ Custom</option>
+                        <option value="ollama">🖥️ Ollama (本地)</option>
+                        <option value="custom">⚙️ 自定义</option>
                     </select>
                 </div>
                 <div class="control-group">
-                    <label>API Key</label>
+                    <label data-i18n="labelApiKey">API密钥</label>
                     <input type="password" id="batch-api-key" placeholder="sk-...">
                 </div>
                 <div class="control-group">
-                    <label>Base URL</label>
+                    <label data-i18n="labelBaseUrl">Base URL</label>
                     <input type="text" id="batch-base-url" placeholder="https://api.openai.com/v1">
                 </div>
                 <div class="control-group">
-                    <label>Model</label>
+                    <label data-i18n="labelModel">模型</label>
                     <input type="text" id="batch-model" placeholder="gpt-4o-mini">
                 </div>
             </div>
@@ -423,8 +438,8 @@
             <div class="dropzone" id="dropzone" onclick="document.getElementById('zip-file').click()">
                 <input type="file" id="zip-file" accept=".zip" style="display:none" onchange="handleFileSelect(event)">
                 <div class="dropzone-text">
-                    <strong>Click to upload</strong> or drag a ZIP here<br>
-                    <span style="font-size:0.8rem;opacity:0.6;">All .py files will be humanized, rest preserved</span>
+                    <strong data-i18n="dropzoneClick">点击选择ZIP</strong><span data-i18n="dropzoneOr">或拖拽ZIP到此处</span><br>
+                    <span style="font-size:0.8rem;opacity:0.6;" data-i18n="dropzoneHint">所有.py文件将被处理，其余保留</span>
                 </div>
             </div>
 
@@ -432,28 +447,28 @@
                 <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
                     <input type="file" id="folder-picker" webkitdirectory directory multiple style="display:none" onchange="handleFolderSelect(event)">
                     <button class="btn btn-secondary" onclick="document.getElementById('folder-picker').click()" style="padding:8px 18px; font-size:0.85rem;">
-                        📁 Choose Folder
+                        📁 <span data-i18n="btnChooseFolder">选择文件夹</span>
                     </button>
                     <span id="folder-name" style="font-size:0.85rem; color:#8b949e;"></span>
                     <button class="btn btn-primary" id="folder-btn" onclick="processFolder()" style="padding:8px 18px; font-size:0.85rem; margin-left:auto;">
-                        <span id="folder-btn-text">Process Folder</span>
+                        <span id="folder-btn-text" data-i18n="btnProcessFolder">处理文件夹</span>
                     </button>
                 </div>
-                <div style="font-size:0.75rem; color:#8b949e; margin-top:6px;">
-                    Select a folder from your computer. Only .py files will be processed.
+                <div style="font-size:0.75rem; color:#8b949e; margin-top:6px;" data-i18n="folderHint">
+                    从本地电脑选择文件夹，仅处理其中的 .py 文件，数据不会离开本机。
                 </div>
             </div>
 
             <div style="margin-top:12px; padding:14px; background:#161b22; border:1px solid #30363d; border-radius:10px;">
                 <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
-                    <label style="font-size:0.85rem; color:#8b949e; font-weight:500;">Or enter server path:</label>
+                    <label style="font-size:0.85rem; color:#8b949e; font-weight:500;" data-i18n="labelLocalPath">或输入本地路径：</label>
                     <input type="text" id="local-path" placeholder="C:/Users/you/project" style="flex:1; min-width:200px;">
                     <button class="btn btn-primary" id="local-btn" onclick="processLocalPath()" style="padding:8px 18px; font-size:0.85rem;">
-                        <span id="local-btn-text">Process Path</span>
+                        <span id="local-btn-text" data-i18n="btnProcessPath">处理路径</span>
                     </button>
                 </div>
-                <div style="font-size:0.75rem; color:#8b949e; margin-top:6px;">
-                    Server must have read access to this directory. Result is downloaded as ZIP.
+                <div style="font-size:0.75rem; color:#8b949e; margin-top:6px;" data-i18n="pathHint">
+                    服务器需有该目录的读取权限，处理结果打包为 ZIP 下载。
                 </div>
             </div>
 
@@ -464,6 +479,117 @@
     </div>
 
     <script>
+        const I18N = {
+            zh: {
+                subtitle: '双引擎代码风格迁移 — AST规则 + AI重写',
+                tabSingle: '单文件',
+                tabBatch: '项目处理',
+                labelEngine: '引擎',
+                labelStyle: '风格',
+                labelSeed: '种子',
+                btnHumanize: '风格化',
+                labelProvider: '提供商',
+                labelApiKey: 'API密钥',
+                labelBaseUrl: 'Base URL',
+                labelModel: '模型',
+                panelInput: '输入（AI代码）',
+                panelOutput: '输出（风格化）',
+                badgeBefore: '处理前',
+                badgeAfter: '处理后',
+                btnCopy: '复制',
+                btnProcessZip: '处理并下载',
+                dropzoneClick: '点击选择ZIP',
+                dropzoneOr: '或拖拽ZIP到此处',
+                dropzoneHint: '所有.py文件将被处理，其余保留',
+                btnChooseFolder: '选择文件夹',
+                btnProcessFolder: '处理文件夹',
+                folderHint: '从本地电脑选择文件夹，仅处理其中的 .py 文件，数据不会离开本机。',
+                labelLocalPath: '或输入本地路径：',
+                btnProcessPath: '处理路径',
+                pathHint: '服务器需有该目录的读取权限，处理结果打包为 ZIP 下载。',
+                processing: '处理中...',
+                copied: '已复制！',
+                copiedEn: 'Copied!',
+                downloadStarted: '✅ 下载已开始：deai_output.zip',
+                downloadStartedEn: '✅ Download started: deai_output.zip',
+                pleaseSelectZip: '请先选择ZIP文件',
+                pleaseSelectFolder: '请先选择文件夹',
+                pleaseEnterPath: '请输入本地目录路径',
+                processingFailed: '处理失败',
+                error: '错误：',
+                networkError: '网络错误：',
+                clickToSeeResult: '# 点击"风格化"查看结果',
+                unknownError: '未知错误',
+            },
+            en: {
+                subtitle: 'Dual-engine code style transfer — AST rules + AI rewrite',
+                tabSingle: 'Single File',
+                tabBatch: 'Project',
+                labelEngine: 'Engine',
+                labelStyle: 'Style',
+                labelSeed: 'Seed',
+                btnHumanize: 'Humanize',
+                labelProvider: 'Provider',
+                labelApiKey: 'API Key',
+                labelBaseUrl: 'Base URL',
+                labelModel: 'Model',
+                panelInput: 'Input (AI Code)',
+                panelOutput: 'Output (Humanized)',
+                badgeBefore: 'BEFORE',
+                badgeAfter: 'AFTER',
+                btnCopy: 'Copy',
+                btnProcessZip: 'Process & Download',
+                dropzoneClick: 'Click to select ZIP',
+                dropzoneOr: ' or drag a ZIP here',
+                dropzoneHint: 'All .py files will be processed, rest preserved',
+                btnChooseFolder: 'Choose Folder',
+                btnProcessFolder: 'Process Folder',
+                folderHint: 'Select a folder from your computer. Only .py files will be processed. Data never leaves your machine.',
+                labelLocalPath: 'Or enter local path:',
+                btnProcessPath: 'Process Path',
+                pathHint: 'Server must have read access. Result is downloaded as ZIP.',
+                processing: 'Processing...',
+                copied: 'Copied!',
+                copiedEn: 'Copied!',
+                downloadStarted: '✅ Download started: deai_output.zip',
+                downloadStartedEn: '✅ Download started: deai_output.zip',
+                pleaseSelectZip: 'Please select a ZIP file first',
+                pleaseSelectFolder: 'Please choose a folder first',
+                pleaseEnterPath: 'Please enter a local directory path',
+                processingFailed: 'Processing failed',
+                error: 'Error: ',
+                networkError: 'Network error: ',
+                clickToSeeResult: '# Click "Humanize" to see the result',
+                unknownError: 'Unknown error',
+            }
+        };
+
+        let currentLang = 'zh';
+
+        function applyLang() {
+            const dict = I18N[currentLang];
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (dict[key]) {
+                    if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+                        el.placeholder = dict[key];
+                    } else {
+                        el.textContent = dict[key];
+                    }
+                }
+            });
+            document.querySelector('.lang-switch').textContent = currentLang === 'zh' ? 'EN / 中文' : '中文 / EN';
+        }
+
+        function toggleLang() {
+            currentLang = currentLang === 'zh' ? 'en' : 'zh';
+            applyLang();
+        }
+
+        function t(key) {
+            return I18N[currentLang][key] || key;
+        }
+
         function setMode(mode) {
             document.getElementById('tab-single').classList.toggle('active', mode === 'single');
             document.getElementById('tab-batch').classList.toggle('active', mode === 'batch');
@@ -527,7 +653,7 @@
             const styleTag = document.getElementById('style-used');
 
             btn.disabled = true;
-            btnText.innerHTML = '<span class="spinner"></span>Processing...';
+            btnText.innerHTML = '<span class="spinner"></span>' + t('processing');
             errorDiv.style.display = 'none';
 
             const payload = {
@@ -552,15 +678,15 @@
                     hljs.highlightAll();
                     styleTag.textContent = 'Style: ' + data.style_used + ' | Engine: ' + engine.toUpperCase();
                 } else {
-                    errorDiv.textContent = data.error || 'Unknown error';
+                    errorDiv.textContent = data.error || t('unknownError');
                     errorDiv.style.display = 'block';
                 }
             } catch (err) {
-                errorDiv.textContent = 'Network error: ' + err.message;
+                errorDiv.textContent = t('networkError') + err.message;
                 errorDiv.style.display = 'block';
             } finally {
                 btn.disabled = false;
-                btnText.textContent = 'Humanize';
+                btnText.textContent = t('btnHumanize');
             }
         }
 
@@ -588,7 +714,7 @@
         async function processZip() {
             const fileInput = document.getElementById('zip-file');
             if (!fileInput.files.length) {
-                alert('Please select a ZIP file first');
+                alert(t('pleaseSelectZip'));
                 return;
             }
 
@@ -598,7 +724,7 @@
             const errorDiv = document.getElementById('error');
 
             btn.disabled = true;
-            btnText.innerHTML = '<span class="spinner"></span>Processing...';
+            btnText.innerHTML = '<span class="spinner"></span>' + t('processing');
             status.innerHTML = '';
             errorDiv.style.display = 'none';
 
@@ -628,18 +754,18 @@
                     a.click();
                     a.remove();
                     URL.revokeObjectURL(url);
-                    status.innerHTML = '<div class="success-msg">✅ Download started: deai_output.zip</div>';
+                    status.innerHTML = '<div class="success-msg">' + t('downloadStarted') + '</div>';
                 } else {
                     const data = await res.json();
-                    errorDiv.textContent = data.error || 'Batch processing failed';
+                    errorDiv.textContent = data.error || t('processingFailed');
                     errorDiv.style.display = 'block';
                 }
             } catch (err) {
-                errorDiv.textContent = 'Error: ' + err.message;
+                errorDiv.textContent = t('error') + err.message;
                 errorDiv.style.display = 'block';
             } finally {
                 btn.disabled = false;
-                btnText.textContent = 'Process & Download';
+                btnText.textContent = t('btnProcessZip');
             }
         }
 
@@ -650,7 +776,7 @@
             navigator.clipboard.writeText(text).then(() => {
                 const btn = document.getElementById('copy-btn');
                 const old = btn.textContent;
-                btn.textContent = 'Copied!';
+                btn.textContent = t('copied');
                 btn.style.borderColor = '#238636';
                 setTimeout(() => { btn.textContent = old; btn.style.borderColor = ''; }, 1500);
             });
@@ -660,15 +786,15 @@
 
         function handleFolderSelect(e) {
             const files = Array.from(e.target.files);
-            selectedFolderFiles = files.filter(f => f.name.endsWith('.py') && !f.path.includes('__pycache__'));
+            selectedFolderFiles = files.filter(f => f.name.endsWith('.py') && !f.webkitRelativePath.includes('__pycache__'));
             const folderName = files.length > 0 ? files[0].webkitRelativePath.split('/')[0] : '';
             document.getElementById('folder-name').textContent =
-                folderName + ' (' + selectedFolderFiles.length + ' .py files)';
+                folderName + ' (' + selectedFolderFiles.length + ' .py)';
         }
 
         async function processFolder() {
             if (selectedFolderFiles.length === 0) {
-                alert('Please choose a folder first');
+                alert(t('pleaseSelectFolder'));
                 return;
             }
 
@@ -678,7 +804,7 @@
             const errorDiv = document.getElementById('error');
 
             btn.disabled = true;
-            btnText.innerHTML = '<span class="spinner"></span>Processing...';
+            btnText.innerHTML = '<span class="spinner"></span>' + t('processing');
             status.innerHTML = '';
             errorDiv.style.display = 'none';
 
@@ -708,25 +834,25 @@
                     a.click();
                     a.remove();
                     URL.revokeObjectURL(url);
-                    status.innerHTML = '<div class="success-msg">✅ Download started: deai_output.zip</div>';
+                    status.innerHTML = '<div class="success-msg">' + t('downloadStarted') + '</div>';
                 } else {
                     const data = await res.json();
-                    errorDiv.textContent = data.error || 'Processing failed';
+                    errorDiv.textContent = data.error || t('processingFailed');
                     errorDiv.style.display = 'block';
                 }
             } catch (err) {
-                errorDiv.textContent = 'Error: ' + err.message;
+                errorDiv.textContent = t('error') + err.message;
                 errorDiv.style.display = 'block';
             } finally {
                 btn.disabled = false;
-                btnText.textContent = 'Process Folder';
+                btnText.textContent = t('btnProcessFolder');
             }
         }
 
         async function processLocalPath() {
             const path = document.getElementById('local-path').value.trim();
             if (!path) {
-                alert('Please enter a local directory path');
+                alert(t('pleaseEnterPath'));
                 return;
             }
 
@@ -736,7 +862,7 @@
             const errorDiv = document.getElementById('error');
 
             btn.disabled = true;
-            btnText.innerHTML = '<span class="spinner"></span>Processing...';
+            btnText.innerHTML = '<span class="spinner"></span>' + t('processing');
             status.innerHTML = '';
             errorDiv.style.display = 'none';
 
@@ -771,24 +897,27 @@
                     a.click();
                     a.remove();
                     URL.revokeObjectURL(url);
-                    status.innerHTML = '<div class="success-msg">✅ Download started: deai_output.zip</div>';
+                    status.innerHTML = '<div class="success-msg">' + t('downloadStarted') + '</div>';
                 } else {
                     const data = await res.json();
-                    errorDiv.textContent = data.error || 'Processing failed';
+                    errorDiv.textContent = data.error || t('processingFailed');
                     errorDiv.style.display = 'block';
                 }
             } catch (err) {
-                errorDiv.textContent = 'Error: ' + err.message;
+                errorDiv.textContent = t('error') + err.message;
                 errorDiv.style.display = 'block';
             } finally {
                 btn.disabled = false;
-                btnText.textContent = 'Process Path';
+                btnText.textContent = t('btnProcessPath');
             }
         }
 
         function escapeHtml(text) {
             return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
         }
+
+        // Initialize
+        applyLang();
     </script>
 </body>
 </html>
