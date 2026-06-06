@@ -33,6 +33,9 @@ dev = ["pytest", "black", "mypy"]
 [project.scripts]
 deai = "deai.cli:main"
 
+[tool.setuptools]
+packages = ["deai"]
+
 [project.urls]
 Homepage = "https://github.com/zhuli/deai"
 Issues = "https://github.com/zhuli/deai/issues"
