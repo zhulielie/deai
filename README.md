@@ -11,6 +11,8 @@
 [![VS Code](https://img.shields.io/badge/VS%20Code-Extension-blueviolet.svg)](./vscode-extension)
 [![Web UI](https://img.shields.io/badge/Web-UI-orange.svg)](./web)
 [![Live Demo](https://img.shields.io/badge/Live-Demo-00C7B7.svg)](https://deai-hv9k.onrender.com/)
+[![Gitee Stars](https://gitee.com/zhulielie/deai/badge/star.svg?theme=dark)](https://gitee.com/zhulielie/deai/stargazers)
+[![Gitee Forks](https://gitee.com/zhulielie/deai/badge/fork.svg?theme=dark)](https://gitee.com/zhulielie/deai/members)
 
 ---
 
@@ -314,8 +316,8 @@ MIT
 
 ---
 
-## Star History
+## ⭐ GitHub Star History
 
-If you find this tool useful or thought-provoking, give it a ⭐ on GitHub!
+If you find this tool useful or thought-provoking, give it a ⭐ on [GitHub](https://github.com/zhulielie/deai) or [Gitee](https://gitee.com/zhulielie/deai)!
 
 [![Star History Chart](https://api.star-history.com/svg?repos=zhulielie/deai&type=Date)](https://star-history.com/#zhulielie/deai&Date)
