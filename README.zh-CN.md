@@ -323,4 +323,4 @@ MIT
 
 如果觉得这个工具有用或引人深思，请在 GitHub 上给它一颗 ⭐！
 
-[![Star History Chart](https://api.star-history.com/svg?repos=zhuli/deai&type=Date)](https://star-history.com/#zhuli/deai&Date)
+[![Star History Chart](https://api.star-history.com/svg?repos=zhulielie/deai&type=Date)](https://star-history.com/#zhulielie/deai&Date)

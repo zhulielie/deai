@@ -318,4 +318,4 @@ MIT
 
 If you find this tool useful or thought-provoking, give it a ⭐ on GitHub!
 
-[![Star History Chart](https://api.star-history.com/svg?repos=zhuli/deai&type=Date)](https://star-history.com/#zhuli/deai&Date)
+[![Star History Chart](https://api.star-history.com/svg?repos=zhulielie/deai&type=Date)](https://star-history.com/#zhulielie/deai&Date)
