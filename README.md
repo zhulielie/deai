@@ -8,6 +8,7 @@
 [![Tests](https://img.shields.io/badge/tests-22%2F22-brightgreen.svg)](https://github.com/zhuli/deai/actions)
 [![VS Code](https://img.shields.io/badge/VS%20Code-Extension-blueviolet.svg)](./vscode-extension)
 [![Web UI](https://img.shields.io/badge/Web-UI-orange.svg)](./web)
+[![Live Demo](https://img.shields.io/badge/Live-Demo-00C7B7.svg)](https://deai-hv9k.onrender.com/)
 
 ---
 
@@ -146,6 +147,8 @@ deai forge-git --start 2024-01-15 --end 2024-03-20 --count 40 --repo .
 ```
 
 ### Web UI
+
+**在线体验**: https://deai-hv9k.onrender.com/
 
 ```bash
 pip install ".[web]"
