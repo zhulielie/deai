@@ -10,7 +10,7 @@
 
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Tests](https://img.shields.io/badge/tests-22%2F22-brightgreen.svg)](https://github.com/zhuli/deai/actions)
+[![Tests](https://img.shields.io/badge/tests-22%2F22-brightgreen.svg)](https://github.com/zhulielie/deai/actions)
 [![VS Code](https://img.shields.io/badge/VS%20Code-Extension-blueviolet.svg)](./vscode-extension)
 [![Web UI](https://img.shields.io/badge/Web-UI-orange.svg)](./web)
 [![在线体验](https://img.shields.io/badge/在线体验-00C7B7.svg)](https://deai-hv9k.onrender.com/)
@@ -38,7 +38,7 @@
 
 ## 🛡️ 实证：在 7 条规则上击败 detect-ai
 
-我们构建了 **[detect-ai](https://github.com/zhuli/detect-ai)**（宿敌）来测试 deai。数据如下：
+我们构建了 **[detect-ai](https://github.com/zhulielie/detect-ai/blob/main/README.zh-CN.md)**（宿敌）来测试 deai。数据如下：
 
 | detect-ai 规则 | AI 代码分数 | deai 伪装后 | Δ |
 |----------------|-------------|-------------|---|
@@ -235,7 +235,7 @@ AST 解析 ──→ _StyleTransformer ──→ ast.unparse
 
 ## 📊 对抗测试结果
 
-针对 **[detect-ai](https://github.com/zhuli/detect-ai)**（我们自己的检测引擎）运行：
+针对 **[detect-ai](https://github.com/zhulielie/detect-ai/blob/main/README.zh-CN.md)**（我们自己的检测引擎）运行：
 
 ```bash
 pytest tests/test_adversarial.py -v

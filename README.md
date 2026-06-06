@@ -7,7 +7,7 @@
 
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Tests](https://img.shields.io/badge/tests-22%2F22-brightgreen.svg)](https://github.com/zhuli/deai/actions)
+[![Tests](https://img.shields.io/badge/tests-22%2F22-brightgreen.svg)](https://github.com/zhulielie/deai/actions)
 [![VS Code](https://img.shields.io/badge/VS%20Code-Extension-blueviolet.svg)](./vscode-extension)
 [![Web UI](https://img.shields.io/badge/Web-UI-orange.svg)](./web)
 [![Live Demo](https://img.shields.io/badge/Live-Demo-00C7B7.svg)](https://deai-hv9k.onrender.com/)
@@ -33,7 +33,7 @@ Modern AI coding assistants leave **detectable fingerprints**:
 
 ## 🛡️ Proven: Beats detect-ai on All 7 Rules
 
-We built **[detect-ai](https://github.com/zhuli/detect-ai)** (the antagonist) to test deai. Here are the numbers:
+We built **[detect-ai](https://github.com/zhulielie/detect-ai)** (the antagonist) to test deai. Here are the numbers:
 
 | detect-ai Rule | AI Code Score | After deai | Δ |
 |----------------|--------------|------------|---|
@@ -230,7 +230,7 @@ Output (Human-looking Code)
 
 ## 📊 Adversarial Test Results
 
-Run against **[detect-ai](https://github.com/zhuli/detect-ai)** (our own detection engine):
+Run against **[detect-ai](https://github.com/zhulielie/detect-ai)** (our own detection engine):
 
 ```bash
 pytest tests/test_adversarial.py -v

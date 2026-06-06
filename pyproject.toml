@@ -37,5 +37,5 @@ deai = "deai.cli:main"
 packages = ["deai"]
 
 [project.urls]
-Homepage = "https://github.com/zhuli/deai"
-Issues = "https://github.com/zhuli/deai/issues"
+Homepage = "https://github.com/zhulielie/deai"
+Issues = "https://github.com/zhulielie/deai/issues"
